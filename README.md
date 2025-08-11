@@ -1,3 +1,6 @@
+
+<img width="1879" height="1734" alt="kp-tracker" src="https://github.com/user-attachments/assets/1cdd6d63-da70-434b-8a70-4f2ed19e5c15" />
+
 # Kimchi Premium Tracker
 
 A real-time cryptocurrency arbitrage monitoring application that tracks price differences between Korean exchanges (Upbit, Bithumb) and global exchanges (Binance), calculating the "Kimchi Premium" - the percentage price difference that often exists in the Korean crypto market.
