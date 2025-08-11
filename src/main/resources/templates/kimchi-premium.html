@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>김치 프리미엄 트래커 - KP Tracker</title>
+  
+  <!-- CSS 파일들 -->
+  <link rel="stylesheet" th:href="@{/css/kp-main.css}">
+  <link rel="stylesheet" th:href="@{/css/kp-dark-theme.css}" id="theme-stylesheet">
+  <link rel="stylesheet" th:href="@{/css/kp-components.css}">
+</head>
+<body>
+<div class="container">
+  <div class="header-wrapper">
+    <h1>💰 <span data-i18n="pageTitle">김치 프리미엄 트래커</span></h1>
+    <div class="header-controls">
+      <select class="language-select" onchange="changeLanguage(this.value)" title="언어 변경">
+        <option value="ko">🇰🇷 한국어</option>
+        <option value="en">🇺🇸 English</option>
+      </select>
+      <button class="theme-toggle" onclick="toggleTheme()" title="테마 변경">
+        <span class="theme-icon">🌙</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 메인 탭 -->
+  <div class="main-tabs">
+    <div class="main-tab active" onclick="showMainTab('realtime')" data-i18n="mainTabs.realtime">⚡ 실시간 김프</div>
+    <div class="main-tab" onclick="showMainTab('major')" data-i18n="mainTabs.major">🔥 주요 코인</div>
+    <div class="main-tab" onclick="showMainTab('all')" data-i18n="mainTabs.all">📊 전체 코인</div>
+    <div class="main-tab" onclick="showMainTab('settings')" data-i18n="mainTabs.settings">⚙️ 설정</div>
+  </div>
+
+  <!-- 실시간 김프 탭 컨텐츠 -->
+  <div id="realtime-content" class="tab-content active">
+    <!-- 환율 정보 박스 -->
+    <div class="dashboard-box">
+      <div style="display: flex; justify-content: space-between;">
+        <div style="width: 48%;">
+          <div class="dashboard-title">💵 USD/KRW 환율</div>
+          <div class="exchange-rate" id="usd-krw-rate">
+            <span class="rate-value">-</span>
+            <span class="rate-unit">원</span>
+          </div>
+        </div>
+        <div style="width: 48%;">
+          <div class="dashboard-title">🔄 마지막 업데이트</div>
+          <div class="update-time" id="last-update-time">-</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 자동 업데이트 설정 -->
+    <div class="dashboard-box">
+      <div class="auto-update-section">
+        <label class="auto-update-label">
+          <input type="checkbox" id="auto-update-check" onchange="toggleAutoUpdate()">
+          <span>30초마다 자동 업데이트</span>
+        </label>
+        <button class="fetch-btn" onclick="fetchAllData()">
+          <span>🔄 지금 업데이트</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 주요 코인 김프 현황 -->
+    <div class="dashboard-box">
+      <div class="dashboard-title">🚀 주요 코인 김치 프리미엄</div>
+      <div class="major-coins-grid">
+        <div class="coin-card" id="btc-card">
+          <div class="coin-header">
+            <span class="coin-symbol">BTC</span>
+            <span class="coin-name">비트코인</span>
+          </div>
+          <div class="coin-prices">
+            <div class="price-row">
+              <span class="exchange-label">🇰🇷 업비트</span>
+              <span class="price" id="btc-upbit">-</span>
+            </div>
+            <div class="price-row">
+              <span class="exchange-label">🇰🇷 빗썸</span>
+              <span class="price" id="btc-bithumb">-</span>
+            </div>
+            <div class="price-row">
+              <span class="exchange-label">🌏 바이낸스</span>
+              <span class="price" id="btc-binance">-</span>
+            </div>
+          </div>
+          <div class="premium-section">
+            <div class="premium-label">김치 프리미엄</div>
+            <div class="premium-value" id="btc-premium">
+              <span class="premium-percent">-</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="coin-card" id="eth-card">
+          <div class="coin-header">
+            <span class="coin-symbol">ETH</span>
+            <span class="coin-name">이더리움</span>
+          </div>
+          <div class="coin-prices">
+            <div class="price-row">
+              <span class="exchange-label">🇰🇷 업비트</span>
+              <span class="price" id="eth-upbit">-</span>
+            </div>
+            <div class="price-row">
+              <span class="exchange-label">🇰🇷 빗썸</span>
+              <span class="price" id="eth-bithumb">-</span>
+            </div>
+            <div class="price-row">
+              <span class="exchange-label">🌏 바이낸스</span>
+              <span class="price" id="eth-binance">-</span>
+            </div>
+          </div>
+          <div class="premium-section">
+            <div class="premium-label">김치 프리미엄</div>
+            <div class="premium-value" id="eth-premium">
+              <span class="premium-percent">-</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="coin-card" id="usdt-card">
+          <div class="coin-header">
+            <span class="coin-symbol">USDT</span>
+            <span class="coin-name">테더</span>
+          </div>
+          <div class="coin-prices">
+            <div class="price-row">
+              <span class="exchange-label">🇰🇷 업비트</span>
+              <span class="price" id="usdt-upbit">-</span>
+            </div>
+            <div class="price-row">
+              <span class="exchange-label">🇰🇷 빗썸</span>
+              <span class="price" id="usdt-bithumb">-</span>
+            </div>
+            <div class="price-row">
+              <span class="exchange-label">🌏 바이낸스</span>
+              <span class="price" id="usdt-binance">-</span>
+            </div>
+          </div>
+          <div class="premium-section">
+            <div class="premium-label">김치 프리미엄</div>
+            <div class="premium-value" id="usdt-premium">
+              <span class="premium-percent">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 주요 코인 탭 컨텐츠 -->
+  <div id="major-content" class="tab-content">
+    <div class="dashboard-box">
+      <div class="dashboard-title">🔥 주요 코인 김프 상세</div>
+      <table>
+        <thead>
+          <tr>
+            <th>코인</th>
+            <th>업비트 (KRW)</th>
+            <th>빗썸 (KRW)</th>
+            <th>바이낸스 (USDT)</th>
+            <th>바이낸스 (KRW 환산)</th>
+            <th>김프 (업비트)</th>
+            <th>김프 (빗썸)</th>
+          </tr>
+        </thead>
+        <tbody id="major-coins-table">
+          <!-- 동적으로 삽입 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 전체 코인 탭 컨텐츠 -->
+  <div id="all-content" class="tab-content">
+    <!-- 환율 정보 박스 -->
+    <div class="dashboard-box">
+      <div style="display: flex; justify-content: space-between;">
+        <div style="width: 48%;">
+          <div class="dashboard-title">💵 USD/KRW 환율</div>
+          <div class="exchange-rate" id="all-usd-krw-rate">
+            <span class="rate-value">-</span>
+            <span class="rate-unit">원</span>
+          </div>
+        </div>
+        <div style="width: 48%;">
+          <div class="dashboard-title">🔄 마지막 업데이트</div>
+          <div class="update-time" id="all-last-update-time">-</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="dashboard-box">
+      <div class="dashboard-title">📊 전체 코인 김프 현황</div>
+      
+      <!-- 거래소별 필터 -->
+      <div class="exchange-filter-section">
+        <div class="filter-description">
+          <span>📍 거래소 상장 현황별로 코인을 필터링하여 확인하세요</span>
+        </div>
+        <div class="exchange-filter-buttons">
+          <label class="filter-radio-label">
+            <input type="radio" name="exchange-filter" value="all" checked onchange="filterByExchange('all')">
+            <span class="filter-button">🌐 전체 보기</span>
+          </label>
+          <label class="filter-radio-label">
+            <input type="radio" name="exchange-filter" value="both" onchange="filterByExchange('both')">
+            <span class="filter-button">🤝 업비트+빗썸 모두 상장</span>
+          </label>
+          <label class="filter-radio-label">
+            <input type="radio" name="exchange-filter" value="upbit-only" onchange="filterByExchange('upbit-only')">
+            <span class="filter-button">🔷 업비트만 상장</span>
+          </label>
+          <label class="filter-radio-label">
+            <input type="radio" name="exchange-filter" value="bithumb-only" onchange="filterByExchange('bithumb-only')">
+            <span class="filter-button">🟡 빗썸만 상장</span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="filter-section">
+        <input type="text" id="coin-search" placeholder="코인 검색..." onkeyup="filterCoins()">
+        <select id="sort-by" onchange="sortCoins()">
+          <option value="upbit-premium-desc">업비트 김프 높은순</option>
+          <option value="upbit-premium-asc">업비트 김프 낮은순</option>
+          <option value="bithumb-premium-desc">빗썸 김프 높은순</option>
+          <option value="bithumb-premium-asc">빗썸 김프 낮은순</option>
+          <option value="volume-desc">거래대금 높은순</option>
+          <option value="volume-asc">거래대금 낮은순</option>
+          <option value="name-asc">이름순</option>
+        </select>
+      </div>
+      <table>
+        <thead id="all-coins-header">
+          <tr>
+            <th>코인</th>
+            <th class="upbit-column">업비트 (KRW)</th>
+            <th class="bithumb-column">빗썸 (KRW)</th>
+            <th>바이낸스 (USDT)</th>
+            <th>24H 거래대금</th>
+            <th class="upbit-premium-column">업비트 김프 (%)</th>
+            <th class="bithumb-premium-column">빗썸 김프 (%)</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody id="all-coins-table">
+          <!-- 동적으로 삽입 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 설정 탭 컨텐츠 -->
+  <div id="settings-content" class="tab-content">
+    <div class="dashboard-box">
+      <div class="dashboard-title">⚙️ 설정</div>
+      <div class="settings-section">
+        <h3>알림 설정</h3>
+        <div class="setting-item">
+          <label>
+            <input type="checkbox" id="alert-enabled">
+            <span>김프 알림 활성화</span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <label>
+            <span>김프 알림 기준값 (%)</span>
+            <input type="number" id="alert-threshold" value="3" min="0" max="20" step="0.5">
+          </label>
+        </div>
+        <div class="setting-item">
+          <label>
+            <span>새로고침 주기 (초)</span>
+            <input type="number" id="refresh-interval" value="30" min="10" max="300" step="10">
+          </label>
+        </div>
+        <button class="save-btn" onclick="saveSettings()">설정 저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript 파일들 -->
+<script th:src="@{/js/kp-api.js}"></script>
+<script th:src="@{/js/kp-core.js}"></script>
+<script th:src="@{/js/kp-render.js}"></script>
+</body>
+</html>
